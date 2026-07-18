@@ -21,8 +21,7 @@ const ROUND_SECONDS = 60;
 const ROUNDS_TO_WIN = 2;      // best of 3
 const MAX_HP = 100;
 const MOVE_SPEED = 230;       // px/s
-const JAB = { damage: 5, reach: 150, duration: 0.24, cooldown: 0.12, active: [0.07, 0.15] };
-const HOOK = { damage: 11, reach: 132, duration: 0.38, cooldown: 0.26, active: [0.14, 0.24] };
+const PUNCH = { damage: 4, reach: 150, duration: 0.26, cooldown: 0.16, active: [0.08, 0.16] };
 const BLOCK_FACTOR = 0.2;     // damage multiplier while blocking
 const HIT_STUN = 0.32;
 const KNOCKBACK = 30;
@@ -66,8 +65,8 @@ window.addEventListener('keydown', (e) => {
 });
 window.addEventListener('keyup', (e) => { keys[e.key.toLowerCase()] = false; });
 
-const P1_KEYS = { left: 'a', right: 'd', block: 's', jab: 'f', hook: 'g' };
-const P2_KEYS = { left: 'arrowleft', right: 'arrowright', block: 'arrowdown', jab: 'k', hook: 'l' };
+const P1_KEYS = { left: 'a', right: 'd', block: 'w', duck: 's', punch: 'f' };
+const P2_KEYS = { left: 'arrowleft', right: 'arrowright', block: 'arrowup', duck: 'arrowdown', punch: 'k' };
 
 // ---------------------------------------------------------------------------
 // Audio (tiny WebAudio blips — no assets)
@@ -110,8 +109,8 @@ function makeBoxer(x, facing, style, keymap, isAI) {
   return {
     x, facing, style, keymap, isAI,
     hp: MAX_HP,
-    state: 'idle',        // idle | punch | block | hit | down
-    punch: null,          // JAB or HOOK while punching
+    state: 'idle',        // idle | punch | block | duck | hit | down
+    punch: null,          // PUNCH while punching
     punchT: 0,
     punchLanded: false,
     cooldown: 0,
@@ -119,7 +118,7 @@ function makeBoxer(x, facing, style, keymap, isAI) {
     flashT: 0,
     knockdowns: 0,
     roundDamage: 0,       // damage dealt this round (for decisions)
-    ai: { timer: 0, move: 0, wantPunch: null, blockT: 0 },
+    ai: { timer: 0, move: 0, wantPunch: false, blockT: 0, duckT: 0 },
   };
 }
 
@@ -191,14 +190,14 @@ function handleMenuKey(key) {
 function opponentOf(b) { return b === p1 ? p2 : p1; }
 
 function boxerIntent(b) {
-  // Returns { move: -1|0|1, block, jab, hook } from keys or AI.
+  // Returns { move: -1|0|1, block, duck, punch } from keys or AI.
   if (!b.isAI) {
     const k = b.keymap;
     return {
       move: (keys[k.right] ? 1 : 0) - (keys[k.left] ? 1 : 0),
       block: !!keys[k.block],
-      jab: !!keys[k.jab],
-      hook: !!keys[k.hook],
+      duck: !!keys[k.duck],
+      punch: !!keys[k.punch],
     };
   }
   const foe = opponentOf(b);
@@ -206,18 +205,21 @@ function boxerIntent(b) {
   const ai = b.ai;
   ai.timer -= dt;
   ai.blockT -= dt;
+  ai.duckT -= dt;
   if (ai.timer <= 0) {
     ai.timer = 0.18 + Math.random() * 0.2;
-    ai.wantPunch = null;
-    if (dist > JAB.reach - 10) {
+    ai.wantPunch = false;
+    if (dist > PUNCH.reach - 10) {
       ai.move = Math.sign(foe.x - b.x);
       if (Math.random() < 0.12) ai.move = 0;
     } else {
       const r = Math.random();
-      if (foe.state === 'punch' && Math.random() < 0.45) {
-        ai.blockT = 0.35; ai.move = 0;
+      if (foe.state === 'punch' && Math.random() < 0.5) {
+        // evade: duck under it or cover up
+        if (Math.random() < 0.5) ai.duckT = 0.35; else ai.blockT = 0.35;
+        ai.move = 0;
       } else if (r < 0.42) {
-        ai.wantPunch = Math.random() < 0.65 ? 'jab' : 'hook';
+        ai.wantPunch = true;
         ai.move = 0;
       } else if (r < 0.62) {
         ai.move = -Math.sign(foe.x - b.x); // back off
@@ -229,8 +231,8 @@ function boxerIntent(b) {
   return {
     move: ai.move,
     block: ai.blockT > 0,
-    jab: ai.wantPunch === 'jab',
-    hook: ai.wantPunch === 'hook',
+    duck: ai.duckT > 0,
+    punch: ai.wantPunch,
   };
 }
 
@@ -238,6 +240,7 @@ function tryLandPunch(b) {
   const foe = opponentOf(b);
   const dist = Math.abs(foe.x - b.x);
   if (dist > b.punch.reach || foe.state === 'down') { return; }
+  if (foe.state === 'duck') { return; } // ducked clean under it
   b.punchLanded = true;
   let dmg = b.punch.damage;
   if (foe.state === 'block') {
@@ -293,8 +296,8 @@ function updateBoxer(b) {
     return;
   }
 
-  // idle / block: free to act
-  b.state = intent.block ? 'block' : 'idle';
+  // idle / block / duck: free to act
+  b.state = intent.block ? 'block' : intent.duck ? 'duck' : 'idle';
 
   if (b.state === 'idle' && intent.move !== 0) {
     b.x += intent.move * MOVE_SPEED * dt;
@@ -307,9 +310,9 @@ function updateBoxer(b) {
     }
   }
 
-  if (b.state !== 'block' && b.cooldown <= 0 && (intent.jab || intent.hook)) {
+  if (b.state === 'idle' && b.cooldown <= 0 && intent.punch) {
     b.state = 'punch';
-    b.punch = intent.hook ? HOOK : JAB;
+    b.punch = PUNCH;
     b.punchT = 0;
     b.punchLanded = false;
   }
@@ -515,41 +518,47 @@ function drawBoxer(b) {
   // Shadow
   rect(cx - 2.5 * U, FLOOR_Y - 6, 5 * U, 8, 'rgba(0,0,0,0.25)');
 
+  // Ducking sinks the whole upper body; the trunks sit right on the shoes.
+  const drop = b.state === 'duck' ? 2 * U : 0;
+  const yy = (u) => y(u) + drop;
+
   // Shoes
   rect(cx - 1.5 * U, y(-1), 3 * U, U, col(s.shoe));
-  // Legs
-  rect(cx - 1.5 * U, y(-3), U, 2 * U, col(s.skin));
-  rect(cx + 0.5 * U, y(-3), U, 2 * U, col(s.skin));
+  // Legs (tucked away in a crouch)
+  if (!drop) {
+    rect(cx - 1.5 * U, y(-3), U, 2 * U, col(s.skin));
+    rect(cx + 0.5 * U, y(-3), U, 2 * U, col(s.skin));
+  }
   // Trunks
-  rect(cx - 1.5 * U + lean * 0.3, y(-5), 3 * U, 2 * U, col(s.trunks));
+  rect(cx - 1.5 * U + lean * 0.3, yy(-5), 3 * U, 2 * U, col(s.trunks));
   // Torso
-  rect(cx - 1.5 * U + lean * 0.6, y(-7), 3 * U, 2 * U, col(s.skin));
+  rect(cx - 1.5 * U + lean * 0.6, yy(-7), 3 * U, 2 * U, col(s.skin));
 
   // Head
   const hx = cx + lean;
-  rect(hx - 1.5 * U, y(-10), 3 * U, 2 * U, col(s.skin));
-  rect(hx - 1.5 * U, y(-11), 3 * U, U, col(s.hair));
+  rect(hx - 1.5 * U, yy(-10), 3 * U, 2 * U, col(s.skin));
+  rect(hx - 1.5 * U, yy(-11), 3 * U, U, col(s.hair));
   // Eyes
   if (!flash) {
-    rect(hx - 0.9 * U, y(-9.6), 0.4 * U, 0.4 * U, s.eye);
-    rect(hx + 0.5 * U, y(-9.6), 0.4 * U, 0.4 * U, s.eye);
+    rect(hx - 0.9 * U, yy(-9.6), 0.4 * U, 0.4 * U, s.eye);
+    rect(hx + 0.5 * U, yy(-9.6), 0.4 * U, 0.4 * U, s.eye);
   }
 
   // Gloves
   const gw = 2 * U, gh = 2 * U;
   const restLeadX = cx + f * 1.5 * U;         // glove nearest the opponent
   const restRearX = cx - f * 3.5 * U;
-  const gloveY = y(-8);
+  const gloveY = yy(-8);
 
   if (b.state === 'punch') {
     const p = Math.sin(Math.PI * Math.min(1, b.punchT / b.punch.duration));
-    const extend = p * (b.punch === HOOK ? 3.2 : 3.8) * U;
+    const extend = p * 3.6 * U;
     rect(restLeadX + f * extend + (f < 0 ? -gw : 0), gloveY - 0.5 * U * p, gw, gh, col(s.glove));
     rect(restRearX + (f < 0 ? -gw : 0), gloveY, gw, gh, col(s.glove));
   } else if (b.state === 'block') {
     // gloves up in front of the face
-    rect(hx - 1.9 * U, y(-10.3), gw, gh, col(s.glove));
-    rect(hx - 0.1 * U, y(-10.3), gw, gh, col(s.glove));
+    rect(hx - 1.9 * U, yy(-10.3), gw, gh, col(s.glove));
+    rect(hx - 0.1 * U, yy(-10.3), gw, gh, col(s.glove));
   } else {
     rect(cx - 3.5 * U, gloveY, gw, gh, col(s.glove));
     rect(cx + 1.5 * U, gloveY, gw, gh, col(s.glove));
@@ -570,8 +579,8 @@ function drawOverlay() {
       drawCenterText('GOLDEN GLOVES', 64, 200, PALETTE.hudPipOn);
       drawCenterText('BOXING', 64, 268, PALETTE.hudPipOn);
       drawCenterText('PRESS 1 — ONE PLAYER    PRESS 2 — TWO PLAYERS', 24, 340);
-      drawCenterText('RED:  A/D move   S block   F jab   G hook', 18, 400, '#b9b3c9');
-      drawCenterText('BLUE: ←/→ move   ↓ block   K jab   L hook', 18, 428, '#b9b3c9');
+      drawCenterText('RED:  A/D move   W block   S duck   F punch', 18, 400, '#b9b3c9');
+      drawCenterText('BLUE: ←/→ move   ↑ block   ↓ duck   K punch', 18, 428, '#b9b3c9');
       break;
     case 'intro':
       drawCenterText(game.message, 56, 330);

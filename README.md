@@ -15,14 +15,16 @@ Open `index.html` in a browser, then:
 | Action | Red (P1) | Blue (P2) |
 | ------ | -------- | --------- |
 | Move   | A / D    | ← / →     |
-| Block  | S        | ↓         |
-| Jab    | F        | K         |
-| Hook   | G        | L         |
+| Block  | W        | ↑         |
+| Duck   | S        | ↓         |
+| Punch  | F        | K         |
 
 ## Rules
 
 - Best of 3 rounds, 60 seconds each. First to win 2 rounds takes the match.
-- Jabs are quick; hooks are slower but hit harder. Blocking cuts damage to 20%.
+- Blocking cuts damage to 20%; ducking dodges a punch entirely but roots you
+  in place. Damage is light, so fights go the distance unless someone gets
+  cornered.
 - When a boxer's health hits zero they're knocked down. They can beat the
   count twice (getting up with partial health) — the third knockdown is a KO.
 - If the clock runs out, the round goes to the boxer with more health left.
