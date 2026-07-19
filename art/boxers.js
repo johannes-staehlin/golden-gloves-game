@@ -15,7 +15,7 @@ function initBoxers(R, P) {
   };
   const WOMAN = {
     skin: '#f0c098', skinHi: '#f8d8b8', skinShad: '#c89060',
-    hair: '#8a6134', hairHi: '#a87c48', hairShad: '#5f4222',   // light brown
+    hair: '#b08a50', hairHi: '#d0ac6c', hairShad: '#7c5c30',   // light brown, sun-kissed
     bra: '#141418', braHi: '#26262e',
     leg: '#17171b', legHi: '#2c2c34', legShad: '#101014',
     glove: '#2244cc', gloveHi: '#4466ee', gloveShad: '#141c8a',
@@ -158,7 +158,7 @@ function initBoxers(R, P) {
       M(5, by - 52, 3, 2, '#ffffff');
       Px(7, by - 52, '#3a5a7a');
       M(8, by - 50, 1, 2, c.skinShad);
-      M(6, by - 48, 3, 2, '#d06868');
+      M(6, by - 48, 3, 1, '#c06858');
       drawGlove(M, -1, by - 46, 8, c);                 // gloves tucked at the chin
       drawGlove(M, 9, by - 49, 8, c);
       return;
@@ -187,23 +187,19 @@ function initBoxers(R, P) {
     M(-5, by - 56, 2, 4, c.bra);
     M(3, by - 56, 2, 4, c.bra);
 
-    // neck + head, softer face
+    // neck + head
     M(-1, by - 56, 4, 3, c.skinShad);
     M(-3, by - 66, 9, 11, c.skin);
-    M(-4, by - 68, 10, 3, c.hair);                     // crown
-    M(-3, by - 68, 4, 1, c.hairHi);                    // shine
-    M(3, by - 66, 3, 1, c.hair);                       // side sweep
-    M(-5, by - 66, 3, 10, c.hair);                     // back of head
+    M(-4, by - 68, 10, 3, c.hairHi);                   // crown
+    M(-5, by - 66, 3, 9, c.hair);                      // back of head
     M(-6, by - 58, 3, 16, c.hair);                     // braid down the back
     Px(-5, by - 54, c.hairShad); Px(-5, by - 49, c.hairShad); Px(-5, by - 44, c.hairShad);
-    M(2, by - 63, 4, 1, c.hairShad);                   // thin brow
-    M(3, by - 62, 3, 1, '#4a3420');                    // lashes
+    M(2, by - 62, 3, 1, c.hairShad);                   // brow
     M(3, by - 61, 3, 2, '#ffffff');                    // eye
     Px(5, by - 61, '#3a5a7a');
-    M(6, by - 59, 1, 2, c.skinShad);                   // small nose
-    Px(2, by - 59, '#e8a084');                         // blush
-    M(4, by - 57, 3, 2, '#d06868');                    // fuller lips
-    Px(4, by - 57, '#e89090');
+    M(6, by - 59, 1, 2, c.skinShad);                   // nose
+    M(3, by - 57, 3, 1, '#c06858');                    // smiling mouth
+    Px(6, by - 58, '#c06858');                         // upturned corner
     M(-1, by - 61, 2, 3, c.skinShad);                  // ear
     Px(0, by - 58, GOLD);                              // earring
 
