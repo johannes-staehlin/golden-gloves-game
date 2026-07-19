@@ -298,9 +298,9 @@ renderBackground();
 // Fighters
 // ---------------------------------------------------------------------------
 
-function makeBoxer(x, facing, isMan, keymap, isAI) {
+function makeBoxer(x, facing, isMan, keymap, isAI, isFat = false) {
   return {
-    x, facing, isMan, keymap, isAI,
+    x, facing, isMan, isFat, keymap, isAI,
     hp: MAX_HP,
     state: 'idle',        // idle | punch | block | duck | hit | down
     punch: null,
@@ -353,8 +353,9 @@ function startMatch(twoPlayer) {
   game.round = 1;
   game.wins = { p1: 0, p2: 0 };
   game.matchWinner = null;
-  p1 = makeBoxer(104, 1, true, P1_KEYS, false);
-  p2 = makeBoxer(216, -1, false, P2_KEYS, !twoPlayer);
+  const family = _familyMode;
+  p1 = makeBoxer(104, 1, true, P1_KEYS, false, family);
+  p2 = makeBoxer(216, -1, false, P2_KEYS, !twoPlayer, family);
   p1.hp = MAX_HP; p2.hp = MAX_HP;
   startRound();
 }
@@ -688,8 +689,13 @@ function drawFighter(b) {
   if (b.state === 'idle') {
     bob = b.moving ? Math.floor(elapsed * 8) % 2 : Math.floor(elapsed * 2) % 2;
   }
-  const draw = b.isMan ? api.drawMan : api.drawWoman;
-  draw(b.x, FLOOR - bob, b.facing, b.isMan ? BX.MAN : BX.WOMAN, poseOf(b));
+  if (b.isFat) {
+    const draw = b.isMan ? api.drawFatMan : api.drawFatWoman;
+    draw(b.x, FLOOR - bob, b.facing, b.isMan ? BX.FAT_MAN : BX.FAT_WOMAN, poseOf(b));
+  } else {
+    const draw = b.isMan ? api.drawMan : api.drawWoman;
+    draw(b.x, FLOOR - bob, b.facing, b.isMan ? BX.MAN : BX.WOMAN, poseOf(b));
+  }
 }
 
 function drawSparks() {
@@ -864,7 +870,8 @@ function tick(now) {
 }
 
 // idle fighters behind the title screen
-p1 = makeBoxer(104, 1, true, P1_KEYS, false);
-p2 = makeBoxer(216, -1, false, P2_KEYS, true);
+const _familyMode = new URLSearchParams(location.search).get('mode') === 'family';
+p1 = makeBoxer(104, 1, true, P1_KEYS, false, _familyMode);
+p2 = makeBoxer(216, -1, false, P2_KEYS, true, _familyMode);
 
 requestAnimationFrame(tick);
