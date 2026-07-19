@@ -4,6 +4,12 @@
 
 'use strict';
 
+function track(event) {
+  if (window.goatcounter && window.goatcounter.count) {
+    window.goatcounter.count({ path: event, event: true });
+  }
+}
+
 const canvas = document.getElementById('game');
 const screenCtx = canvas.getContext('2d');
 const SW = 320, SH = 180, SCALE = 3;
@@ -339,6 +345,7 @@ const game = {
 };
 
 function startMatch(twoPlayer) {
+  track(twoPlayer ? 'game-2-player' : 'game-1-player');
   game.twoPlayer = twoPlayer;
   game.round = 1;
   game.wins = { p1: 0, p2: 0 };
@@ -362,7 +369,7 @@ function startRound() {
 const MENU_ITEMS = [
   { label: '1 PLAYER', action: () => startMatch(false) },
   { label: '2 PLAYERS', action: () => startMatch(true) },
-  { label: 'VISIT WEBSITE', action: () => window.open('https://www.golden-gloves-bruchsal.de/', '_blank') },
+  { label: 'VISIT WEBSITE', action: () => { track('visit-website'); window.open('https://www.golden-gloves-bruchsal.de/', '_blank'); } },
 ];
 let menuSel = 0;
 
@@ -551,6 +558,7 @@ function endRound() {
 
 function endMatch(winner, how) {
   game.matchWinner = winner;
+  track(winner === 'p1' ? 'win-red' : 'win-blue');
   game.scene = 'matchEnd';
   game.sceneT = 0;
   game.message = `${winner === 'p1' ? 'RED' : 'BLUE'} WINS!`;
