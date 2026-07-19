@@ -16,7 +16,7 @@ const _langs = {
     PUNCH:         'PUNCH',
     RED:           'RED',
     BLUE:          'BLUE',
-    MOBILE_HINT:   'Please open on a computer to play',
+    MOBILE_HINT:   'Open on a computer to play',
   },
   de: {
     ONE_PLAYER:    '1 SPIELER',
