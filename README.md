@@ -1,9 +1,10 @@
-# Golden Gloves Boxing
+# Golden Gloves Bruchsal — Boxing
 
-A retro pixel-art boxing game for the browser. No dependencies, no build step —
-just open `index.html` (or serve the folder with any static file server).
-
-![Gameplay: two pixel boxers facing off in the ring](https://img.shields.io/badge/HTML5-canvas-orange)
+A retro pixel-art boxing game for the browser, styled after the Golden Gloves
+Bruchsal gym: black-and-gold ring, club crest on the mat, and two fighters —
+a bearded, tattooed man in the red gloves and a boxer with a light-brown
+braid in the blue gloves. No dependencies, no build step — just open
+`index.html` (or serve the folder with any static file server).
 
 ## How to play
 
@@ -32,10 +33,16 @@ Open `index.html` in a browser, then:
 
 ## Development
 
-Everything lives in three files:
-
 - `index.html` — page shell and canvas
 - `style.css` — letterboxing and pixelated scaling
-- `game.js` — game loop, boxer logic, AI, rendering, and WebAudio sound effects
+- `game.js` — game loop, fighter logic, AI, scene rendering, HUD, and
+  WebAudio sound effects
+- `art/boxers.js` — the two fighter sprites with all poses
+  (guard/punch/block/duck/hit/down), shared between the game and the
+  art previews
+- `art/` — the standalone art-direction previews the look was iterated on
+  (`final.html` is the reference scene)
 
-The stage is a fixed 1024×576 canvas; sprites are chunky rects on a 16px grid.
+Everything is drawn procedurally at a 320×180 internal resolution and scaled
+3× to a 960×540 canvas with crisp pixels. The static scene (crowd, ring,
+mat, crest) is prerendered once; fighters, HUD, and effects draw per frame.

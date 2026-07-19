@@ -151,13 +151,15 @@ function drawSoftSpotlight() {
   }
 }
 
-// Tight club crest on the mat (rounder circle).
+// Tight club crest on the mat. Wreath leaves sit on a true circle
+// (radius 16, computed, not hand-tuned) so it reads round, not egg-shaped.
 function drawFloorCrest(cx, cy) {
-  const lv = [
-    [17, 8], [17, 3], [16, -2], [14, -7], [12, -10], [9, -13], [5, -14],
-    [16, 13], [14, 16], [11, 17], [7, 18],
-  ];
-  for (const [ox, oy] of lv) {
+  // angles from upper-left/right around to the bottom, leaving the top
+  // open for the fists and the bottom center open for the 76
+  for (const deg of [-52, -34, -16, 2, 20, 38, 56]) {
+    const rad = deg * Math.PI / 180;
+    const ox = Math.round(16 * Math.cos(rad));
+    const oy = Math.round(16 * Math.sin(rad));
     R(cx - ox - 1, cy + oy, 3, 2, GOLD);
     R(cx + ox - 2, cy + oy, 3, 2, GOLD);
   }
@@ -168,7 +170,7 @@ function drawFloorCrest(cx, cy) {
   R(cx - 5, cy - 4, 11, 5, GOLD);
   R(cx - 4, cy + 1, 9, 4, GOLD);
   R(cx - 6, cy - 10, 3, 11, GOLD_HI);                                    // catch-light
-  text(cx - textW('76') / 2, cy + 13, '76', GOLD);
+  text(cx - textW('76') / 2, cy + 12, '76', GOLD);
 }
 
 function drawPost(x) {
