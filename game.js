@@ -298,9 +298,9 @@ renderBackground();
 // Fighters
 // ---------------------------------------------------------------------------
 
-function makeBoxer(x, facing, isMan, keymap, isAI, isFat = false) {
+function makeBoxer(x, facing, isMan, keymap, isAI, isHeavy = false) {
   return {
-    x, facing, isMan, isFat, keymap, isAI,
+    x, facing, isMan, isHeavy, keymap, isAI,
     hp: MAX_HP,
     state: 'idle',        // idle | punch | block | duck | hit | down
     punch: null,
@@ -689,9 +689,9 @@ function drawFighter(b) {
   if (b.state === 'idle') {
     bob = b.moving ? Math.floor(elapsed * 8) % 2 : Math.floor(elapsed * 2) % 2;
   }
-  if (b.isFat) {
-    const draw = b.isMan ? api.drawFatMan : api.drawFatWoman;
-    draw(b.x, FLOOR - bob, b.facing, b.isMan ? BX.FAT_MAN : BX.FAT_WOMAN, poseOf(b));
+  if (b.isHeavy) {
+    const draw = b.isMan ? api.drawHeavyMan : api.drawHeavyWoman;
+    draw(b.x, FLOOR - bob, b.facing, b.isMan ? BX.HEAVY_MAN : BX.HEAVY_WOMAN, poseOf(b));
   } else {
     const draw = b.isMan ? api.drawMan : api.drawWoman;
     draw(b.x, FLOOR - bob, b.facing, b.isMan ? BX.MAN : BX.WOMAN, poseOf(b));
