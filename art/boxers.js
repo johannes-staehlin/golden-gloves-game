@@ -47,7 +47,7 @@ function initBoxers(R, P) {
 
     if (pose === 'down') {
       // flat on his back, head away from the opponent
-      M(-26, by - 3, 46, 3, 'rgba(0,0,0,0.4)');
+      M(-26, by - 3, 46, 3, 'rgba(0,0,0,0)');
       M(8, by - 7, 13, 4, c.skinShad);               // legs stacked
       M(19, by - 9, 6, 6, '#202024');                // shoes up
       M(-2, by - 9, 11, 7, c.trunk);
@@ -67,7 +67,7 @@ function initBoxers(R, P) {
 
     if (pose === 'duck') {
       // crouch: knees bent, torso tucked, gloves shielding
-      M(-16, by - 2, 34, 4, 'rgba(0,0,0,0.4)');
+      M(-16, by - 2, 34, 4, 'rgba(0,0,0,0)');
       M(-13, by - 4, 9, 4, '#202024');
       M(-12, by - 3, 7, 1, '#3a3a40');
       M(-13, by - 1, 9, 1, '#0c0c0c');
@@ -213,7 +213,7 @@ function initBoxers(R, P) {
     const Px = (dx, y, col) => P(dir > 0 ? bx + dx : bx - dx - 1, y, col);
 
     if (pose === 'down') {
-      M(-24, by - 3, 42, 3, 'rgba(0,0,0,0.4)');
+      M(-24, by - 3, 42, 3, 'rgba(0,0,0,0)');
       M(8, by - 6, 12, 3, c.leg);                    // legs stacked
       M(19, by - 8, 5, 5, '#e8e8e8');                // sneakers up
       M(-2, by - 8, 11, 6, c.leg);                   // hips
@@ -232,7 +232,7 @@ function initBoxers(R, P) {
 
     if (pose === 'duck') {
       // crouched: knees bent, torso leaning in, both gloves up by the face
-      M(-14, by - 2, 30, 4, 'rgba(0,0,0,0.4)');
+      M(-14, by - 2, 30, 4, 'rgba(0,0,0,0)');
       M(-11, by - 3, 8, 3, '#d8d8d8');
       M(-11, by - 1, 8, 1, '#909090');
       M(3, by - 3, 9, 3, '#e8e8e8');
@@ -301,11 +301,12 @@ function initBoxers(R, P) {
     // neck + head
     M(-1 + lean, by - 56, 4, 3, c.skinShad);
     M(-3 + lean, by - 66, 9, 11, c.skin);
-    M(-4 + lean, by - 68, 10, 3, c.hairHi);            // crown
+    M(-3 + lean, by - 68, 8, 1, c.hairHi);              // crown top (narrower = rounded)
+    M(-4 + lean, by - 67, 10, 2, c.hairHi);             // crown lower
     M(-5 + lean, by - 66, 3, 9, c.hair);               // back of head
     M(-6 + lean, by - 58, 3, 16, c.hair);              // braid down the back
     Px(-5 + lean, by - 54, c.hairShad); Px(-5 + lean, by - 49, c.hairShad); Px(-5 + lean, by - 44, c.hairShad);
-    M(2 + lean, by - 62, 3, 1, c.hairShad);            // brow
+    M(3 + lean, by - 63, 2, 1, c.skinShad);             // brow (softer, narrower)
     M(3 + lean, by - 61, 3, 2, '#ffffff');             // eye
     Px(5 + lean, by - 61, '#3a5a7a');
     M(6 + lean, by - 59, 1, 2, c.skinShad);            // nose

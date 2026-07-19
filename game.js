@@ -31,40 +31,78 @@ let seed = 20260719;
 function rnd() { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; }
 function pick(a) { return a[Math.floor(rnd() * a.length)]; }
 
+// 5×7 pixel-serif font. Each glyph is 7 rows of 5-char strings.
 const FONT = {
-  A: ['###', '#.#', '###', '#.#', '#.#'], B: ['##.', '#.#', '##.', '#.#', '##.'],
-  C: ['###', '#..', '#..', '#..', '###'], D: ['##.', '#.#', '#.#', '#.#', '##.'],
-  E: ['###', '#..', '##.', '#..', '###'], F: ['###', '#..', '##.', '#..', '#..'],
-  G: ['###', '#..', '#.#', '#.#', '###'], H: ['#.#', '#.#', '###', '#.#', '#.#'],
-  I: ['###', '.#.', '.#.', '.#.', '###'], K: ['#.#', '#.#', '##.', '#.#', '#.#'],
-  L: ['#..', '#..', '#..', '#..', '###'], M: ['#.#', '###', '###', '#.#', '#.#'],
-  N: ['#.#', '###', '#.#', '#.#', '#.#'], O: ['###', '#.#', '#.#', '#.#', '###'],
-  P: ['###', '#.#', '###', '#..', '#..'], R: ['##.', '#.#', '##.', '#.#', '#.#'],
-  S: ['###', '#..', '###', '..#', '###'], T: ['###', '.#.', '.#.', '.#.', '.#.'],
-  U: ['#.#', '#.#', '#.#', '#.#', '###'], V: ['#.#', '#.#', '#.#', '#.#', '.#.'],
-  W: ['#.#', '#.#', '###', '###', '#.#'], Y: ['#.#', '#.#', '###', '.#.', '.#.'],
-  '0': ['###', '#.#', '#.#', '#.#', '###'], '1': ['.#.', '##.', '.#.', '.#.', '###'],
-  '2': ['###', '..#', '###', '#..', '###'], '3': ['###', '..#', '.##', '..#', '###'],
-  '4': ['#.#', '#.#', '###', '..#', '..#'], '5': ['###', '#..', '###', '..#', '###'],
-  '6': ['###', '#..', '###', '#.#', '###'], '7': ['###', '..#', '.#.', '.#.', '.#.'],
-  '8': ['###', '#.#', '###', '#.#', '###'], '9': ['###', '#.#', '###', '..#', '###'],
-  ':': ['...', '.#.', '...', '.#.', '...'], '!': ['.#.', '.#.', '.#.', '...', '.#.'],
-  '-': ['...', '...', '###', '...', '...'], ' ': ['...', '...', '...', '...', '...'],
+  A: ['..#..', '.#.#.', '#...#', '#...#', '#####', '#...#', '#...#'],
+  B: ['####.', '#...#', '#...#', '####.', '#...#', '#...#', '####.'],
+  C: ['.####', '#....', '#....', '#....', '#....', '#....', '.####'],
+  D: ['####.', '#...#', '#...#', '#...#', '#...#', '#...#', '####.'],
+  E: ['#####', '#....', '#....', '####.', '#....', '#....', '#####'],
+  F: ['#####', '#....', '#....', '####.', '#....', '#....', '#....'],
+  G: ['.####', '#....', '#....', '#..##', '#...#', '#...#', '.####'],
+  H: ['#...#', '#...#', '#...#', '#####', '#...#', '#...#', '#...#'],
+  I: ['#####', '..#..', '..#..', '..#..', '..#..', '..#..', '#####'],
+  J: ['#####', '...#.', '...#.', '...#.', '#..#.', '#..#.', '.##..'],
+  K: ['#...#', '#..#.', '#.#..', '##...', '#.#..', '#..#.', '#...#'],
+  L: ['#....', '#....', '#....', '#....', '#....', '#....', '#####'],
+  M: ['#...#', '##.##', '#.#.#', '#.#.#', '#...#', '#...#', '#...#'],
+  N: ['#...#', '##..#', '#.#.#', '#..##', '#...#', '#...#', '#...#'],
+  O: ['.###.', '#...#', '#...#', '#...#', '#...#', '#...#', '.###.'],
+  P: ['####.', '#...#', '#...#', '####.', '#....', '#....', '#....'],
+  Q: ['.###.', '#...#', '#...#', '#...#', '#.#.#', '#..##', '.####'],
+  R: ['####.', '#...#', '#...#', '####.', '#.#..', '#..#.', '#...#'],
+  S: ['.####', '#....', '#....', '.###.', '....#', '....#', '####.'],
+  T: ['#####', '..#..', '..#..', '..#..', '..#..', '..#..', '..#..'],
+  U: ['#...#', '#...#', '#...#', '#...#', '#...#', '#...#', '.###.'],
+  V: ['#...#', '#...#', '#...#', '#...#', '.#.#.', '.#.#.', '..#..'],
+  W: ['#...#', '#...#', '#...#', '#.#.#', '#.#.#', '##.##', '#...#'],
+  X: ['#...#', '.#.#.', '..#..', '..#..', '.#.#.', '#...#', '#...#'],
+  Y: ['#...#', '#...#', '.#.#.', '..#..', '..#..', '..#..', '..#..'],
+  Z: ['#####', '....#', '...#.', '..#..', '.#...', '#....', '#####'],
+  '0': ['.###.', '#..##', '#.#.#', '##..#', '#...#', '#...#', '.###.'],
+  '1': ['..#..', '.##..', '..#..', '..#..', '..#..', '..#..', '#####'],
+  '2': ['.###.', '#...#', '....#', '...#.', '..#..', '.#...', '#####'],
+  '3': ['#####', '....#', '...#.', '..##.', '....#', '....#', '#####'],
+  '4': ['....#', '...##', '..#.#', '.#..#', '#####', '....#', '....#'],
+  '5': ['#####', '#....', '#....', '####.', '....#', '....#', '#####'],
+  '6': ['..###', '.#...', '#....', '####.', '#...#', '#...#', '.###.'],
+  '7': ['#####', '....#', '...#.', '..#..', '.#...', '.#...', '.#...'],
+  '8': ['.###.', '#...#', '#...#', '.###.', '#...#', '#...#', '.###.'],
+  '9': ['.###.', '#...#', '#...#', '.####', '....#', '...#.', '###..'],
+  ':': ['.....', '..#..', '.....', '.....', '..#..', '.....', '.....'],
+  '!': ['..#..', '..#..', '..#..', '..#..', '.....', '..#..', '..#..'],
+  '-': ['.....', '.....', '.....', '#####', '.....', '.....', '.....'],
+  '/': ['....#', '...#.', '..#..', '..#..', '.#...', '#....', '#....'],
+  '←': ['.....', '..#..', '.#...', '#####', '.#...', '..#..', '.....'],  // ←
+  '→': ['.....', '..#..', '...#.', '#####', '...#.', '..#..', '.....'],  // →
+  '↑': ['..#..', '.###.', '#.#.#', '..#..', '..#..', '..#..', '..#..'],  // ↑
+  '↓': ['..#..', '..#..', '..#..', '..#..', '#.#.#', '.###.', '..#..'],  // ↓
+  ' ': ['.....', '.....', '.....', '.....', '.....', '.....', '.....'],
 };
 function text(x, y, s, c, sc = 1) {
   let cx = x;
   for (const ch of s) {
     const gl = FONT[ch] || FONT[' '];
-    for (let r = 0; r < 5; r++) for (let i = 0; i < 3; i++) {
+    for (let r = 0; r < 7; r++) for (let i = 0; i < 5; i++) {
       if (gl[r][i] === '#') R(cx + i * sc, y + r * sc, sc, sc, c);
     }
-    cx += 4 * sc;
+    cx += 6 * sc;
   }
 }
-function textW(s, sc = 1) { return s.length * 4 * sc - sc; }
+function textW(s, sc = 1) { return s.length * 6 * sc - sc; }
 function centerText(s, sc, y, c = '#e8e4da') {
-  text(160 - textW(s, sc) / 2 + 1, y + 1, s, '#08080e', sc);
-  text(160 - textW(s, sc) / 2, y, s, c, sc);
+  const x = Math.round(160 - textW(s, sc) / 2);
+  text(x + 1, y + 1, s, '#08080e', sc);
+  text(x, y, s, c, sc);
+}
+function centerTextOutlined(s, sc, y, c = '#e8e4da') {
+  const x = Math.round(160 - textW(s, sc) / 2);
+  const d = Math.max(1, sc - 1);
+  text(x - d, y - d, s, '#2a2a2a', sc);
+  text(x + d, y - d, s, '#2a2a2a', sc);
+  text(x - d, y + d, s, '#2a2a2a', sc);
+  text(x + d, y + d, s, '#2a2a2a', sc);
+  text(x, y, s, c, sc);
 }
 
 const GOLD = '#c99a3f', GOLD_HI = '#e9c568', GOLD_DK = '#8a6a28';
@@ -81,22 +119,8 @@ const BXF = initBoxers(
 );
 
 // ---------------------------------------------------------------------------
-// Tunables (320x180 space)
+// Settings loaded from settings.js
 // ---------------------------------------------------------------------------
-
-const FLOOR = 152;
-const RING_LEFT = 36;
-const RING_RIGHT = 284;
-const MIN_GAP = 26;
-const ROUND_SECONDS = 60;
-const ROUNDS_TO_WIN = 2;      // best of 3
-const MAX_HP = 100;
-const MOVE_SPEED = 70;        // px/s
-const PUNCH = { damage: 4, reach: 44, duration: 0.26, cooldown: 0.16, active: [0.08, 0.16] };
-const BLOCK_FACTOR = 0.2;
-const HIT_STUN = 0.32;
-const KNOCKBACK = 9;
-const GETUP_HP = 35;
 
 // ---------------------------------------------------------------------------
 // Input
@@ -111,7 +135,7 @@ window.addEventListener('keydown', (e) => {
 window.addEventListener('keyup', (e) => { keys[e.key.toLowerCase()] = false; });
 
 const P1_KEYS = { left: 'a', right: 'd', block: 'w', duck: 's', punch: 'f' };
-const P2_KEYS = { left: 'arrowleft', right: 'arrowright', block: 'arrowup', duck: 'arrowdown', punch: 'k' };
+const P2_KEYS = { left: 'arrowleft', right: 'arrowright', block: 'arrowup', duck: 'arrowdown', punch: 'l' };
 
 // ---------------------------------------------------------------------------
 // Audio (tiny WebAudio blips — no assets)
@@ -278,6 +302,7 @@ function makeBoxer(x, facing, isMan, keymap, isAI) {
     flashT: 0,
     moving: false,
     knockdowns: 0,
+    roundKnockdowns: 0,
     roundDamage: 0,
     ai: { timer: 0, move: 0, wantPunch: false, blockT: 0, duckT: 0 },
   };
@@ -289,7 +314,7 @@ function resetBoxersForRound() {
   p1.x = 104; p2.x = 216;
   for (const b of [p1, p2]) {
     b.state = 'idle'; b.punch = null; b.punchT = 0; b.cooldown = 0;
-    b.stunT = 0; b.flashT = 0; b.roundDamage = 0; b.moving = false;
+    b.stunT = 0; b.flashT = 0; b.roundDamage = 0; b.roundKnockdowns = 0; b.moving = false;
     b.hp = Math.min(MAX_HP, b.hp + 35);
   }
   p1.facing = 1; p2.facing = -1;
@@ -334,12 +359,22 @@ function startRound() {
   sfx.bell();
 }
 
+const MENU_ITEMS = [
+  { label: '1 PLAYER', action: () => startMatch(false) },
+  { label: '2 PLAYERS', action: () => startMatch(true) },
+  { label: 'VISIT WEBSITE', action: () => window.open('https://www.golden-gloves-bruchsal.de/', '_blank') },
+];
+let menuSel = 0;
+
 function handleMenuKey(key) {
   if (game.scene === 'title') {
-    if (key === '1') startMatch(false);
-    if (key === '2') startMatch(true);
+    if (key === 'arrowup') { menuSel = (menuSel + MENU_ITEMS.length - 1) % MENU_ITEMS.length; sfx.count(); }
+    else if (key === 'arrowdown') { menuSel = (menuSel + 1) % MENU_ITEMS.length; sfx.count(); }
+    else if (key === 'enter' || key === ' ') { MENU_ITEMS[menuSel].action(); }
+    else if (key === '1') { menuSel = 0; startMatch(false); }
+    else if (key === '2') { menuSel = 1; startMatch(true); }
   } else if (game.scene === 'matchEnd' && game.sceneT > 1.5) {
-    if (key === 'enter' || key === ' ') { game.scene = 'title'; game.sceneT = 0; }
+    if (key === 'enter' || key === ' ') { game.scene = 'title'; game.sceneT = 0; menuSel = 0; }
   }
 }
 
@@ -366,24 +401,41 @@ function boxerIntent(b) {
   ai.blockT -= dt;
   ai.duckT -= dt;
   if (ai.timer <= 0) {
-    ai.timer = 0.18 + Math.random() * 0.2;
+    ai.timer = (AI.reactionTime + Math.random() * AI.reactionJitter) / AI.skill;
     ai.wantPunch = false;
+
+    const sk = AI.skill;
+    // foe just whiffed — seize the moment
+    const foeWhiffed = foe.state === 'punch' && foe.punchT > foe.punch.duration * 0.7;
+
     if (dist > PUNCH.reach - 4) {
+      // close the distance
       ai.move = Math.sign(foe.x - b.x);
-      if (Math.random() < 0.12) ai.move = 0;
+      if (Math.random() < AI.approachHesitate / sk) ai.move = 0;
     } else {
-      const r = Math.random();
-      if (foe.state === 'punch' && Math.random() < 0.5) {
-        if (Math.random() < 0.5) ai.duckT = 0.35; else ai.blockT = 0.35;
+      // in punching range
+      if (foe.state === 'punch' && Math.random() < Math.min(0.95, 0.72 * sk)) {
+        // react to incoming punch — mostly block, sometimes duck
+        if (Math.random() < AI.blockChance) ai.blockT = AI.blockDuration;
+        else ai.duckT = AI.duckDuration;
         ai.move = 0;
-      } else if (r < 0.42) {
-        ai.wantPunch = true;
-        ai.move = 0;
-      } else if (r < 0.62) {
-        ai.move = -Math.sign(foe.x - b.x);
       } else {
-        ai.move = 0;
+        const r = Math.random();
+        const punchBias = Math.min(0.9, (foeWhiffed ? AI.punchChance + AI.counterChance : AI.punchChance) * sk);
+        if (r < punchBias) {
+          ai.wantPunch = true;
+          ai.move = 0;
+        } else if (r < punchBias + AI.circleChance) {
+          ai.move = -Math.sign(foe.x - b.x);  // step away
+        } else {
+          ai.move = 0;
+        }
       }
+    }
+    // occasionally step in after landing a punch
+    if (ai.lastHit && Math.random() < AI.chaseAfterHit) {
+      ai.move = Math.sign(foe.x - b.x);
+      ai.lastHit = false;
     }
   }
   return {
@@ -412,6 +464,7 @@ function tryLandPunch(b) {
     foe.flashT = 0.12;
     sparks.push({ x: foe.x + foe.facing * 6, y: FLOOR - 62, t: 0 });
     sfx.hit();
+    if (b.isAI) b.ai.lastHit = true;
   }
   foe.hp = Math.max(0, foe.hp - dmg);
   b.roundDamage += dmg;
@@ -422,7 +475,9 @@ function tryLandPunch(b) {
 
 function knockDown(b) {
   b.state = 'down';
+  b.flashT = 0;
   b.knockdowns++;
+  b.roundKnockdowns++;
   game.scene = 'count';
   game.sceneT = 0;
   game.count = 0;
@@ -482,9 +537,11 @@ function updateBoxer(b) {
 
 function endRound() {
   sfx.bell();
+  const score = (b) => b.hp - b.roundKnockdowns * GETUP_HP;
+  const s1 = score(p1), s2 = score(p2);
   let result;
-  if (p1.hp > p2.hp) result = 'p1';
-  else if (p2.hp > p1.hp) result = 'p2';
+  if (s1 > s2) result = 'p1';
+  else if (s2 > s1) result = 'p2';
   else result = p1.roundDamage >= p2.roundDamage ? 'p1' : 'p2';
   game.wins[result]++;
   game.scene = 'roundEnd';
@@ -592,6 +649,26 @@ function poseOf(b) {
   }
 }
 
+function drawFighterShadow(b) {
+  const cx = b.x, cy = FLOOR - 1;
+  const rx = b.isMan ? 18 : 15;
+  // draw concentric ellipses, wide and flat, fading outward
+  const steps = [
+    [rx,       3, 0.22],
+    [rx * 1.3, 2, 0.13],
+    [rx * 1.6, 1, 0.07],
+  ];
+  g.save();
+  g.scale(1, 1);
+  for (const [ew, eh, alpha] of steps) {
+    g.fillStyle = `rgba(0,0,0,${alpha})`;
+    g.beginPath();
+    g.ellipse(cx, cy, ew, eh, 0, 0, Math.PI * 2);
+    g.fill();
+  }
+  g.restore();
+}
+
 function drawFighter(b) {
   const api = b.flashT > 0 ? BXF : BX;
   let bob = 0;
@@ -615,7 +692,7 @@ function drawSparks() {
 // occasional camera flashes in the crowd
 const crowdFlashes = [];
 function updateCrowdFlashes() {
-  if (Math.random() < 0.04) {
+  if (Math.random() < CROWD.flashRate) {
     crowdFlashes.push({ x: 6 + Math.random() * (SW - 12), y: 42 + Math.random() * 38, t: 0 });
   }
   for (let i = crowdFlashes.length - 1; i >= 0; i--) {
@@ -632,6 +709,9 @@ function drawCrowdFlashes() {
     g.fillRect(f.x, f.y, 1, 1);
   }
 }
+
+
+
 
 function drawHud() {
   R(0, 0, SW, 26, '#08080e');
@@ -656,26 +736,60 @@ function drawHud() {
   const t = Math.max(0, Math.ceil(game.timeLeft));
   const mm = Math.floor(t / 60);
   const ss = (t % 60).toString().padStart(2, '0');
-  text(160 - textW(`${mm}:${ss}`, 2) / 2, 8, `${mm}:${ss}`, '#e8e4da', 2);
+  text(160 - textW(`${mm}:${ss}`, 1) / 2, 6, `${mm}:${ss}`, '#e8e4da', 1);
 }
 
 function drawOverlay() {
   switch (game.scene) {
     case 'title': {
-      g.fillStyle = 'rgba(10,10,18,0.62)';
+      g.fillStyle = 'rgba(10,10,18,0.72)';
       g.fillRect(0, 0, SW, SH);
-      centerText('GOLDEN GLOVES', 3, 44, GOLD_HI);
-      centerText('BRUCHSAL', 2, 66, GOLD);
-      centerText('PRESS 1 - ONE PLAYER    PRESS 2 - TWO PLAYERS', 1, 92);
-      centerText('RED   A D MOVE   W BLOCK   S DUCK   F PUNCH', 1, 112, '#9b95ab');
-      centerText('BLUE  ARROWS MOVE UP BLOCK DOWN DUCK  K PUNCH', 1, 122, '#9b95ab');
+
+      // title
+      centerText('GOLDEN GLOVES BRUCHSAL', 2, 26, GOLD_HI);
+      centerText('THE GAME', 2, 48, GOLD);
+
+      // menu
+      const menuY = [76, 87, 98];
+      for (let i = 0; i < MENU_ITEMS.length; i++) {
+        const sel = i === menuSel;
+        if (sel) {
+          const tw = textW(MENU_ITEMS[i].label, 1);
+          R(160 - tw / 2 - 4, menuY[i] - 1, tw + 8, 9, GOLD_DK);
+        }
+        centerText(MENU_ITEMS[i].label, 1, menuY[i], sel ? GOLD_HI : '#e8e4da');
+      }
+      // controls table — no grid lines
+      const TC = '#9b95ab', TH = '#c8c4d8';
+      const tx = [62, 100, 142, 178, 218];
+      const tHdrY = 122, tR1Y = 133, tR2Y = 144;
+
+      text(tx[1], tHdrY, 'MOVE',  TC, 1);
+      text(tx[2], tHdrY, 'DUCK',  TC, 1);
+      text(tx[3], tHdrY, 'BLOCK', TC, 1);
+      text(tx[4], tHdrY, 'PUNCH', TC, 1);
+
+      text(tx[0], tR1Y, 'RED',  TH, 1);
+      text(tx[1], tR1Y, 'A/D',  TC, 1);
+      text(tx[2], tR1Y, 'S',    TC, 1);
+      text(tx[3], tR1Y, 'W',    TC, 1);
+      text(tx[4], tR1Y, 'F',    TC, 1);
+
+      text(tx[0], tR2Y, 'BLUE', TH, 1);
+      text(tx[1], tR2Y, '←/→', TC, 1);
+      text(tx[2], tR2Y, '↓',   TC, 1);
+      text(tx[3], tR2Y, '↑',   TC, 1);
+      text(tx[4], tR2Y, 'L',   TC, 1);
       break;
     }
     case 'intro':
       centerText(game.message, 3, 96, game.message === 'FIGHT!' ? GOLD_HI : '#e8e4da');
       break;
     case 'count':
-      if (game.count >= 1) centerText(String(Math.min(10, game.count)), 4, 92, GOLD_HI);
+      if (game.count >= 1) {
+        const cs = String(Math.min(10, game.count));
+        centerTextOutlined(cs, 4, 92, GOLD_HI);
+      }
       break;
     case 'roundEnd':
       centerText(game.message, 2, 96);
@@ -685,7 +799,7 @@ function drawOverlay() {
       g.fillRect(0, 0, SW, SH);
       centerText(game.message, 3, 84, GOLD_HI);
       centerText(game.subMessage, 2, 108);
-      if (game.sceneT > 1.5) centerText('PRESS ENTER', 1, 132, '#9b95ab');
+      if (game.sceneT > 1.5) centerText('PRESS ENTER', 2, 132, '#9b95ab');
       break;
   }
 }
@@ -696,6 +810,8 @@ function draw() {
   if (p1 && p2) {
     // the puncher draws last so the extended glove overlaps
     const order = p1.state === 'punch' ? [p2, p1] : [p1, p2];
+    drawFighterShadow(order[0]);
+    drawFighterShadow(order[1]);
     drawFighter(order[0]);
     drawFighter(order[1]);
   }
