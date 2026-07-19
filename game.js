@@ -771,8 +771,18 @@ function drawOverlay() {
       }
       // controls table — no grid lines
       const TC = '#9b95ab', TH = '#c8c4d8';
-      const tx = [62, 100, 142, 178, 218];
       const tHdrY = 122, tR1Y = 133, tR2Y = 144;
+      const colW = [
+        Math.max(textW(t('RED'), 1), textW(t('BLUE'), 1)),
+        Math.max(textW(t('MOVE'), 1), textW('A/D', 1), textW('←/→', 1)),
+        Math.max(textW(t('DUCK'), 1), textW('S', 1), textW('↓', 1)),
+        Math.max(textW(t('BLOCK'), 1), textW('W', 1), textW('↑', 1)),
+        Math.max(textW(t('PUNCH'), 1), textW('F', 1), textW('L', 1)),
+      ];
+      const GAP = 8;
+      const tableW = colW.reduce((s, w) => s + w + GAP, 0) - GAP;
+      let cx = Math.round((SW - tableW) / 2);
+      const tx = colW.map(w => { const x = cx; cx += w + GAP; return x; });
 
       text(tx[1], tHdrY, t('MOVE'),  TC, 1);
       text(tx[2], tHdrY, t('DUCK'),  TC, 1);
