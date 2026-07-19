@@ -1,7 +1,7 @@
-// Art preview — PROPOSAL A: 320x180 internal ("more details").
-// Same resolution as before, but every element uses the full pixel budget:
-// shaded gloves with cuffs and laces, crowd with faces/hair/phones, and a
-// wordless mat logo (wreath + boxer + 76).
+// Art preview — PROPOSAL A2: 320x180, club crest in the heading.
+// Same scene as proposal A, but the logo is a small crest at the top center
+// (timer moves below it, round pips move under each health bar) and the mat
+// stays clean — no floor logo.
 
 'use strict';
 
@@ -57,34 +57,47 @@ const GOLD = '#c99a3f', GOLD_HI = '#e9c568', GOLD_DK = '#8a6a28';
 
 // --- HUD -------------------------------------------------------------------
 
+function drawCrest(cx, top) {
+  // mini club crest: wreath + victorious boxer + 76
+  R(cx - 6, top + 1, 2, 2, GOLD_HI); R(cx + 4, top + 1, 2, 2, GOLD_HI);   // fists
+  R(cx - 6, top + 3, 2, 4, GOLD); R(cx + 4, top + 3, 2, 4, GOLD);         // arms
+  R(cx - 1, top + 2, 3, 3, GOLD);                                          // head
+  R(cx - 4, top + 5, 9, 4, GOLD);                                          // chest
+  R(cx - 3, top + 9, 7, 3, GOLD);
+  R(cx - 4, top + 5, 2, 7, GOLD_HI);
+  const lv = [[12, 14], [12, 10], [11, 6], [9, 3], [7, 1]];
+  for (const [ox, oy] of lv) {
+    R(cx - ox - 1, top + oy, 2, 2, GOLD);
+    R(cx + ox - 1, top + oy, 2, 2, GOLD);
+  }
+  text(cx - textW('76') / 2, top + 14, '76', GOLD);
+}
+
 function drawHud() {
-  R(0, 0, SW, 26, '#08080e');
+  R(0, 0, SW, 32, '#08080e');
+  R(0, 31, SW, 1, GOLD_DK);
   const bar = (x, fillFrom, frac) => {
-    R(x - 1, 5, 114, 11, GOLD);
-    R(x, 6, 112, 9, '#0e0e12');
-    const w = Math.round(110 * frac);
-    if (fillFrom === 'left') { R(x + 1, 7, w, 7, '#c02418'); R(x + 1, 7, w, 1, '#e05040'); }
-    else { R(x + 1 + (110 - w), 7, w, 7, '#c02418'); R(x + 1 + (110 - w), 7, w, 1, '#e05040'); }
+    R(x - 1, 4, 106, 11, GOLD);
+    R(x, 5, 104, 9, '#0e0e12');
+    const w = Math.round(102 * frac);
+    if (fillFrom === 'left') { R(x + 1, 6, w, 7, '#c02418'); R(x + 1, 6, w, 1, '#e05040'); }
+    else { R(x + 1 + (102 - w), 6, w, 7, '#c02418'); R(x + 1 + (102 - w), 6, w, 1, '#e05040'); }
   };
   bar(9, 'left', 1);
-  bar(199, 'right', 0.72);
-  for (let i = 0; i < 3; i++) {
-    const x = 146 + i * 11;
-    R(x, 5, 8, 8, GOLD);
-    if (i > 0) R(x + 1, 6, 6, 6, '#242430');
-  }
-  text(160 - textW('0:45') / 2, 16, '0:45', '#e8e4da');
+  bar(207, 'right', 0.72);
+  // per-fighter round wins (first to 2), under each bar
+  const pip = (x, won) => {
+    R(x, 18, 7, 7, GOLD);
+    if (!won) R(x + 1, 19, 5, 5, '#242430');
+  };
+  pip(8, true); pip(18, false);          // red has taken round 1
+  pip(295, false); pip(305, false);
+  // crest replaces the center info block; timer sits right below it
+  drawCrest(160, 3);
+  text(160 - textW('0:45') / 2, 24, '0:45', '#e8e4da');
 }
 
 // --- banner + crowd --------------------------------------------------------
-
-function drawBanner() {
-  R(0, 26, SW, 12, '#0c0a06');
-  R(0, 26, SW, 1, GOLD_DK);
-  R(0, 37, SW, 1, GOLD_DK);
-  const s = 'GOLDEN GLOVES BRUCHSAL';
-  text(160 - textW(s) / 2, 29, s, GOLD);
-}
 
 const DIM_SHIRTS = [
   ['#2a2438', '#3a3450'], ['#382830', '#4c3842'], ['#243038', '#34424e'],
@@ -118,9 +131,9 @@ function crowdPerson(x, y) {
 }
 
 function drawCrowd() {
-  R(0, 38, SW, 46, '#131019');
+  R(0, 32, SW, 52, '#131019');
   for (let row = 0; row < 4; row++) {
-    const y = 48 + row * 11;
+    const y = 46 + row * 11;
     for (let x = 2; x < SW - 6; x += 10) {
       if (rnd() < 0.15) continue;
       crowdPerson(x + Math.floor(rnd() * 3), y);
@@ -141,32 +154,6 @@ function drawMat() {
     g.fillStyle = 'rgba(58,54,44,0.10)';
     g.fillRect(70 - i * 20, 100 + i * 8, 180 + i * 40, 70 - i * 8);
   }
-}
-
-function drawGoldLogo(cx, cy) {
-  // laurel wreath, curling in at the bottom around the 76
-  const leaves = [
-    [34, 4], [34, 0], [34, -3], [33, -7], [32, -10], [30, -13], [28, -16],
-    [25, -19], [22, -21], [18, -23], [14, -24], [10, -25],
-    [33, 10], [31, 13], [29, 15], [26, 17], [23, 19], [19, 21], [15, 22], [11, 23],
-  ];
-  for (const [ox, oy] of leaves) {
-    R(cx - ox - 1, cy + oy, 3, 2, GOLD);
-    P(cx - ox, cy + oy + 1, GOLD_DK);
-    R(cx + ox - 1, cy + oy, 3, 2, GOLD);
-    P(cx + ox, cy + oy + 1, GOLD_DK);
-  }
-  // victorious boxer silhouette (bigger — no text ring around it)
-  R(cx - 3, cy - 30, 6, 6, GOLD);                      // head
-  R(cx - 7, cy - 24, 14, 7, GOLD);                     // chest
-  R(cx - 6, cy - 17, 12, 7, GOLD);
-  R(cx - 5, cy - 10, 10, 5, GOLD);
-  R(cx - 10, cy - 23, 3, 5, GOLD); R(cx + 7, cy - 23, 3, 5, GOLD);       // shoulders
-  R(cx - 12, cy - 31, 4, 9, GOLD); R(cx + 8, cy - 31, 4, 9, GOLD);       // raised arms
-  R(cx - 12, cy - 35, 4, 4, GOLD_HI); R(cx + 8, cy - 35, 4, 4, GOLD_HI); // fists
-  R(cx - 7, cy - 24, 3, 12, GOLD_HI);                  // catch-light
-  // '76' nested between the wreath tails
-  text(cx - textW('76') / 2, cy + 19, '76', GOLD);
 }
 
 function drawPost(x) {
@@ -202,11 +189,9 @@ function drawRopes() {
 drawCrowd();
 drawMat();
 drawRopes();
-drawGoldLogo(160, 128);
 const BX = initBoxers(R, P);
 BX.drawMan(104, 150, 1, BX.MAN);
 BX.drawWoman(216, 154, -1, BX.WOMAN);
-drawBanner();
 drawHud();
 
 const cv = document.getElementById('cv');
