@@ -78,12 +78,15 @@ function initBoxers(R, P) {
       Px(1 + lean, by - 47 + i * 3, c.skinShad);
     }
     // chest piece + rib tattoos
-    for (const [tx, ty] of [[1, 57], [3, 56], [0, 55], [2, 54], [4, 55]]) {
+    for (const [tx, ty] of [[1, 57], [3, 56], [0, 55], [2, 54], [4, 55], [2, 52], [5, 53]]) {
       Px(tx + lean, by - ty, c.tattoo);
     }
     M(-4 + lean, by - 49, 1, 2, c.tattoo);
     M(-3 + lean, by - 46, 1, 2, c.tattoo);
     M(-5 + lean, by - 44, 1, 2, c.tattoo);
+    M(-2 + lean, by - 44, 1, 2, c.tattoo);
+    M(-7 + lean, by - 56, 2, 2, c.tattoo);           // trap / upper back
+    M(-6 + lean, by - 52, 2, 1, c.tattoo);           // shoulder blade
 
     // neck + head
     M(-2 + lean, by - 61, 6, 4, c.skinShad);
@@ -113,10 +116,16 @@ function initBoxers(R, P) {
     if (pose === 'punch') {
       M(5 + lean, by - 57, 8, 5, c.skin);
       M(12 + lean, by - 56, 7, 4, c.skinHi);
+      Px(6 + lean, by - 56, c.tattoo);               // small lead-arm piece
+      Px(8 + lean, by - 55, c.tattoo);
+      Px(7 + lean, by - 54, c.tattoo);
       drawGlove(M, 19 + lean, by - 59, 9, c);
     } else {
       M(5, by - 56, 6, 5, c.skin);
       M(10, by - 54, 5, 5, c.skinHi);
+      Px(6, by - 55, c.tattoo);                      // small lead-arm piece
+      Px(8, by - 54, c.tattoo);
+      Px(7, by - 53, c.tattoo);
       drawGlove(M, 14, by - 58, 9, c);
     }
   }
