@@ -361,15 +361,16 @@ function startRound() {
   game.timeLeft = ROUND_SECONDS;
   game.scene = 'intro';
   game.sceneT = 0;
-  game.message = `ROUND ${game.round}`;
+  game.isFight = false;
+  game.message = `${t('ROUND')} ${game.round}`;
   game.subMessage = '';
   sfx.bell();
 }
 
 const MENU_ITEMS = [
-  { label: '1 PLAYER', action: () => startMatch(false) },
-  { label: '2 PLAYERS', action: () => startMatch(true) },
-  { label: 'VISIT WEBSITE', action: () => { track('visit-website'); window.open('https://www.golden-gloves-bruchsal.de/', '_blank'); } },
+  { label: () => t('ONE_PLAYER'), action: () => startMatch(false) },
+  { label: () => t('TWO_PLAYERS'), action: () => startMatch(true) },
+  { label: () => t('VISIT_WEBSITE'), action: () => { track('visit-website'); window.open('https://www.golden-gloves-bruchsal.de/', '_blank'); } },
 ];
 let menuSel = 0;
 
@@ -553,7 +554,7 @@ function endRound() {
   game.wins[result]++;
   game.scene = 'roundEnd';
   game.sceneT = 0;
-  game.message = `ROUND ${game.round} GOES TO ${result === 'p1' ? 'RED' : 'BLUE'}`;
+  game.message = t('ROUND_GOES_TO', { round: game.round, winner: result === 'p1' ? t('RED') : t('BLUE') });
 }
 
 function endMatch(winner, how) {
@@ -561,7 +562,7 @@ function endMatch(winner, how) {
   track(winner === 'p1' ? 'win-red' : 'win-blue');
   game.scene = 'matchEnd';
   game.sceneT = 0;
-  game.message = `${winner === 'p1' ? 'RED' : 'BLUE'} WINS!`;
+  game.message = t('WINS', { winner: winner === 'p1' ? t('RED') : t('BLUE') });
   game.subMessage = how;
   sfx.bell();
   setTimeout(sfx.bell, 350);
@@ -581,8 +582,9 @@ function update() {
       break;
 
     case 'intro':
-      if (game.sceneT > 1.2 && game.message !== 'FIGHT!') {
-        game.message = 'FIGHT!';
+      if (game.sceneT > 1.2 && !game.isFight) {
+        game.message = t('FIGHT');
+        game.isFight = true;
       }
       if (game.sceneT > 1.9) {
         game.scene = 'fight';
@@ -617,7 +619,7 @@ function update() {
         if (game.count >= 10) {
           const winner = b === p1 ? 'p2' : 'p1';
           game.wins[winner]++;
-          endMatch(winner, 'BY KNOCKOUT');
+          endMatch(winner, t('BY_KNOCKOUT'));
         }
       }
       break;
@@ -627,7 +629,7 @@ function update() {
       if (game.sceneT > 2.2) {
         if (game.wins.p1 >= ROUNDS_TO_WIN || game.wins.p2 >= ROUNDS_TO_WIN || game.round >= 3) {
           const winner = game.wins.p1 >= game.wins.p2 ? 'p1' : 'p2';
-          endMatch(winner, 'BY DECISION');
+          endMatch(winner, t('BY_DECISION'));
         } else {
           game.round++;
           startRound();
@@ -762,28 +764,28 @@ function drawOverlay() {
       for (let i = 0; i < MENU_ITEMS.length; i++) {
         const sel = i === menuSel;
         if (sel) {
-          const tw = textW(MENU_ITEMS[i].label, 1);
+          const tw = textW(MENU_ITEMS[i].label(), 1);
           R(160 - tw / 2 - 4, menuY[i] - 1, tw + 8, 9, GOLD_DK);
         }
-        centerText(MENU_ITEMS[i].label, 1, menuY[i], sel ? GOLD_HI : '#e8e4da');
+        centerText(MENU_ITEMS[i].label(), 1, menuY[i], sel ? GOLD_HI : '#e8e4da');
       }
       // controls table — no grid lines
       const TC = '#9b95ab', TH = '#c8c4d8';
       const tx = [62, 100, 142, 178, 218];
       const tHdrY = 122, tR1Y = 133, tR2Y = 144;
 
-      text(tx[1], tHdrY, 'MOVE',  TC, 1);
-      text(tx[2], tHdrY, 'DUCK',  TC, 1);
-      text(tx[3], tHdrY, 'BLOCK', TC, 1);
-      text(tx[4], tHdrY, 'PUNCH', TC, 1);
+      text(tx[1], tHdrY, t('MOVE'),  TC, 1);
+      text(tx[2], tHdrY, t('DUCK'),  TC, 1);
+      text(tx[3], tHdrY, t('BLOCK'), TC, 1);
+      text(tx[4], tHdrY, t('PUNCH'), TC, 1);
 
-      text(tx[0], tR1Y, 'RED',  TH, 1);
+      text(tx[0], tR1Y, t('RED'),  TH, 1);
       text(tx[1], tR1Y, 'A/D',  TC, 1);
       text(tx[2], tR1Y, 'S',    TC, 1);
       text(tx[3], tR1Y, 'W',    TC, 1);
       text(tx[4], tR1Y, 'F',    TC, 1);
 
-      text(tx[0], tR2Y, 'BLUE', TH, 1);
+      text(tx[0], tR2Y, t('BLUE'), TH, 1);
       text(tx[1], tR2Y, '←/→', TC, 1);
       text(tx[2], tR2Y, '↓',   TC, 1);
       text(tx[3], tR2Y, '↑',   TC, 1);
@@ -791,7 +793,7 @@ function drawOverlay() {
       break;
     }
     case 'intro':
-      centerText(game.message, 3, 96, game.message === 'FIGHT!' ? GOLD_HI : '#e8e4da');
+      centerText(game.message, 3, 96, game.isFight ? GOLD_HI : '#e8e4da');
       break;
     case 'count':
       if (game.count >= 1) {
@@ -807,7 +809,7 @@ function drawOverlay() {
       g.fillRect(0, 0, SW, SH);
       centerText(game.message, 3, 84, GOLD_HI);
       centerText(game.subMessage, 2, 108);
-      if (game.sceneT > 1.5) centerText('PRESS ENTER', 2, 132, '#9b95ab');
+      if (game.sceneT > 1.5) centerText(t('PRESS_ENTER'), 2, 132, '#9b95ab');
       break;
   }
 }

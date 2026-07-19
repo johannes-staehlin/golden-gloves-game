@@ -13,9 +13,17 @@
     <img src="screenshot.png" alt="Golden Gloves Boxing game screenshot">
     <p>Please open on a computer to play</p>
   </div>
+  <script src="i18n.js"></script>
   <script src="art/boxers.js"></script>
   <script src="settings.js"></script>
-  <script src="game.js"></script>
+  <script>
+    loadTranslations().then(() => {
+      const s = document.createElement('script');
+      s.src = 'game.js';
+      document.body.appendChild(s);
+      document.getElementById('mobile-hint').querySelector('p').textContent = t('MOBILE_HINT');
+    });
+  </script>
   <script data-goatcounter="https://johannes-staehlin.goatcounter.com/count"
           async src="https://gc.zgo.at/count.js"></script>
 </body>
