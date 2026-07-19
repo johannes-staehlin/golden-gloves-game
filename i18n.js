@@ -26,7 +26,7 @@ const _langs = {
     FIGHT:         'FIGHT!',
     ROUND_GOES_TO: 'RUNDE {round} GEHT AN {winner}',
     WINS:          '{winner} GEWINNT!',
-    BY_KNOCKOUT:   'DURCH K.O.',
+    BY_KNOCKOUT:   'DURCH KO',
     BY_DECISION:   'NACH PUNKTEN',
     PRESS_ENTER:   'ENTER DRÜCKEN',
     MOVE:          'BEWEGEN',
